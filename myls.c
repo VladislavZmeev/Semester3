@@ -9,6 +9,7 @@ int main(int argc, char* argv[])
 {
     int is_l_flag = 0;
     char *dirname = ".";
+    char path[1024];
 
     for (int i = 1; i < argc; i++)
     {
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
             dirname = argv[i];
         }
     }
-    printf("\ndirname = %s, l = %d\n\n", dirname, is_l_flag);
+    //printf("\ndirname = %s, l = %d\n\n", dirname, is_l_flag);
 
     struct dirent *entry;
 
@@ -40,7 +41,24 @@ int main(int argc, char* argv[])
         {
             continue;
         }
-        printf("%s\n", filename);
+        if (is_l_flag)
+        {
+            snprintf(path, sizeof(path), "%s/%s", dirname, filename);
+            //snprintf — это функция для записи форматированной строки в буфер с ограничением по размеру.
+            
+            struct stat st;
+            if (stat(path, &st) == -1)
+            {
+                perror("stat");
+                continue;
+            }
+
+            printf("%-5ld %s\n", st.st_size, filename);
+        }
+        else
+        {
+            printf("%s\n", filename);
+        }
     }
     closedir(dir);
     return 0;
